@@ -1,0 +1,5 @@
+#!/bin/bash -e
+
+cat <<EOF
+This is the openio builder image.
+EOF

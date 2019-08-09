@@ -1,0 +1,18 @@
+#!/bin/bash -e
+
+if [ "$(ls /tmp/artifacts/build 2>/dev/null)" ]; then
+  echo "---> Restoring build artifacts..."
+  # TODO restore artifacts
+fi
+
+echo "---> Building and installing from source..."
+
+cd /tmp/src
+(
+  cd oio-sds
+  export CMAKE_OPTS='-DCMAKE_INSTALL_PREFIX=/app/oio -DLD_LIBDIR=lib'
+  export CMAKE_OPTS="${CMAKE_OPTS} -DZK_LIBDIR=/usr/lib -DZK_INCDIR=/usr/include/zookeeper"
+  cmake ${CMAKE_OPTS} -DCMAKE_BUILD_TYPE="Debug" .
+  make all install
+  PBR_VERSION=5.0.0 /app/venv/bin/python setup.py install
+)
