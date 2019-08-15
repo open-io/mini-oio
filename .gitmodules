@@ -1,0 +1,3 @@
+[submodule "src/oio-sds"]
+	path = src/oio-sds
+	url = git@github.com:open-io/oio-sds.git

@@ -5,7 +5,13 @@ jobs:
       - image: circleci/buildpack-deps:bionic-scm
     steps:
       - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
       - setup_remote_docker
       - run:
           name: Build
           command: make build
+      - run: curl -L https://github.com/openshift/source-to-image/releases/download/v1.1.14/source-to-image-v1.1.14-874754de-linux-amd64.tar.gz | tar xz ./s2i && sudo install s2i /usr/local/bin/s2i
+      - run:
+          name: Test
+          command: make test
