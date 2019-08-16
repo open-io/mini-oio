@@ -16,3 +16,7 @@ cd /tmp/src
   make all install
   PBR_VERSION=5.0.0 /app/venv/bin/python setup.py install
 )
+(
+  cd oio-swift
+  /app/venv/bin/python setup.py install
+)
