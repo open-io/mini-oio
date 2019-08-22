@@ -1,0 +1,12 @@
+host: 127.0.0.1
+port: 6013
+type: rdir
+location: host1.vol2
+checks:
+  - {type: tcp}
+slots:
+  - rdir
+stats:
+  - {type: volume, path: /app/data/rdir-1}
+  - {type: http, path: /status, parser: json}
+  - {type: system}

@@ -1,0 +1,10 @@
+namespace: QA
+user: openio
+log_level: INFO
+log_facility: LOG_LOCAL0
+log_udp_host: 127.0.0.1
+syslog_prefix: OIO,QA,conscience-agent,1
+check_interval: 1
+rise: 1
+fall: 1
+include_dir: /app/.oio/sds/conf/watch

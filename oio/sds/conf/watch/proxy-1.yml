@@ -1,0 +1,11 @@
+host: 127.0.0.1
+port: 6000
+type: oioproxy
+location: host1.vol1
+checks:
+  - {type: tcp}
+slots:
+  - oioproxy
+stats:
+  - {type: oioproxy}
+  - {type: system}

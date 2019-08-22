@@ -1,0 +1,12 @@
+host: 127.0.0.1
+port: 6005
+type: beanstalkd
+location: host1.vol1
+checks:
+    - {type: tcp}
+slots:
+    - beanstalkd
+stats:
+    - {type: beanstalkd}
+    - {type: system}
+    - {type: volume, path: /app/data/beanstalkd-1}

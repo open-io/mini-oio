@@ -1,0 +1,12 @@
+host: 127.0.0.1
+port: 6007
+type: meta1
+location: host1.vol1
+slots:
+  - meta1
+checks:
+  - {type: asn1}
+stats:
+  - {type: volume, path: /app/data/meta1-1}
+  - {type: meta}
+  - {type: system}

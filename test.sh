@@ -24,6 +24,10 @@ run_s2i_build() {
   s2i build --incremental ${s2i_args} ${test_dir}/src ${IMAGE_NAME} ${IMAGE_NAME}-test
 }
 
+test_s2i_usage() {
+  s2i usage ${s2i_args} ${IMAGE_NAME} &>/dev/null
+}
+
 cleanup() {
   if image_exists ${IMAGE_NAME}-test; then
     docker rmi ${IMAGE_NAME}-test
@@ -41,6 +45,9 @@ check_result() {
 
 prepare
 run_s2i_build
+check_result $?
+
+test_s2i_usage
 check_result $?
 
 cleanup

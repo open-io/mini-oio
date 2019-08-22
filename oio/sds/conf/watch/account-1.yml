@@ -1,0 +1,10 @@
+host: 127.0.0.1
+port: 6012
+type: account
+checks:
+    - {type: tcp}
+slots:
+    - account
+stats:
+    - {type: http, path: /status, parser: json}
+    - {type: system}

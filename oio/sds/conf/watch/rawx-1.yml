@@ -1,0 +1,12 @@
+host: 127.0.0.1
+port: 6009
+type: rawx
+location: host1.vol1
+checks:
+  - {type: http, uri: /info}
+slots:
+  - rawx
+stats:
+  - {type: volume, path: /app/data/rawx-1}
+  - {type: rawx, path: /stat}
+  - {type: system}

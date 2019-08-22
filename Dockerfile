@@ -29,4 +29,6 @@ RUN go get gopkg.in/ini.v1 && \
 
 COPY scripts/ /builder
 
+COPY --chown=1000:0 oio/ /app/.oio
+
 CMD ["/builder/usage"]
