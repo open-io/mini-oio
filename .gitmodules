@@ -4,3 +4,6 @@
 [submodule "src/oio-swift"]
 	path = src/oio-swift
 	url = git@github.com:open-io/oio-swift.git
+[submodule "src/swift3"]
+	path = src/swift3
+	url = git@github.com:open-io/swift3.git
