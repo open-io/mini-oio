@@ -7,10 +7,14 @@ IMAGE_NAME=${IMAGE_NAME-mini-oio/builder}
 s2i_args="--pull-policy=never --incremental-pull-policy=never"
 _dir="$(dirname "${BASH_SOURCE[0]}")"
 test_dir="$(realpath ${_dir})"
-
+cid_file=$(mktemp --suffix=.cid -u)
 
 image_exists() {
   docker inspect $1 &>/dev/null
+}
+
+container_exists() {
+  image_exists $(cat $cid_file)
 }
 
 prepare() {
@@ -28,7 +32,16 @@ test_s2i_usage() {
   s2i usage ${s2i_args} ${IMAGE_NAME} &>/dev/null
 }
 
+run_test_container() {
+  docker run --rm --cidfile=${cid_file} --name builder-test ${IMAGE_NAME}-test /app/.oio/start.sh
+}
+
 cleanup() {
+  if [ -f $cid_file ]; then
+    if container_exists; then
+      docker stop $(cat $cid_file)
+    fi
+  fi
   if image_exists ${IMAGE_NAME}-test; then
     docker rmi ${IMAGE_NAME}-test
   fi
@@ -48,6 +61,10 @@ run_s2i_build
 check_result $?
 
 test_s2i_usage
+check_result $?
+
+run_test_container
+
 check_result $?
 
 cleanup
