@@ -63,8 +63,24 @@ test_openio() {
   openio object create 1 /etc/magic -f json
 }
 
+test_oioswift() {
+  code=$(curl -s -w %{http_code} -o /dev/null 'http://127.0.0.1:5000/healthcheck')
+  status=$?
+  result=0
+  if [ $status -eq 0 ]; then
+    if [ $code -eq 200 ]; then
+      echo "oioswift healthcheck: OK"
+      return
+    fi
+  fi
+  echo "oioswift healthcheck: KO"
+  exit 1
+}
+
 wait_for_openio
 
 bootstrap_openio
 
 test_openio
+
+test_oioswift
