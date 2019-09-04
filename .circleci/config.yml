@@ -18,7 +18,9 @@ jobs:
       - setup_remote_docker
       - run:
           name: Build
-          command: make build
+          command: |
+            docker pull $IMAGE_NAME:latest || true
+            docker build --cache-from $IMAGE_NAME:latest -t $IMAGE_NAME .
       - run:
           name: Install s2i
           command: curl -L https://github.com/openshift/source-to-image/releases/download/v1.1.14/source-to-image-v1.1.14-874754de-linux-amd64.tar.gz | tar xz ./s2i && sudo install s2i /usr/local/bin/s2i
