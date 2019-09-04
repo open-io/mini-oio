@@ -1,12 +1,20 @@
-version: 2
-jobs:
-  build:
+version: 2.1
+executors:
+  docker-publish:
+    environment:
+      IMAGE_NAME: openioci/builder
     docker:
       - image: circleci/buildpack-deps:bionic-scm
+jobs:
+  build:
+    executor: docker-publish
     steps:
       - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
+      - run:
+          name: Submodule update
+          command: |
+            git submodule sync
+            git submodule update --init
       - setup_remote_docker
       - run:
           name: Build
@@ -19,14 +27,13 @@ jobs:
           command: make test
       - run:
           name: Save image
-          command: docker save -o image.tar openioci/builder
+          command: docker save -o image.tar $IMAGE_NAME
       - persist_to_workspace:
           root: .
           paths:
             - ./image.tar
   publish:
-    docker:
-      - image: circleci/buildpack-deps:bionic-scm
+    executor: docker-publish
     steps:
       - attach_workspace:
           at: /tmp/workspace
@@ -37,8 +44,11 @@ jobs:
       - run:
           name: Push image
           command: |
-            docker login -u $DOCKER_USER -p $DOCKER_PASS
-            docker push openioci/builder
+            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+            IMAGE_TAG="${CIRCLE_BUILD_NUM}"
+            docker tag $IMAGE_NAME:latest $IMAGE_NAME:$IMAGE_TAG
+            docker push $IMAGE_NAME:latest
+            docker push $IMAGE_NAME:$IMAGE_TAG
 
 workflows:
   version: 2
