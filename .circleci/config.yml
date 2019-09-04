@@ -18,7 +18,36 @@ jobs:
           name: Test
           command: make test
       - run:
+          name: Save image
+          command: docker save -o image.tar openioci/builder
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./image.tar
+  publish:
+    docker:
+      - image: circleci/buildpack-deps:bionic-scm
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - setup_remote_docker
+      - run:
+          name: Load image
+          command: docker load -i /tmp/workspace/image.tar
+      - run:
           name: Push image
           command: |
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker push openioci/builder
+
+workflows:
+  version: 2
+  main:
+    jobs:
+      - build
+      - publish:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
