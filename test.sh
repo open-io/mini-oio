@@ -2,7 +2,7 @@
 
 set -o nounset
 
-IMAGE_NAME=${IMAGE_NAME-mini-oio/builder}
+IMAGE_NAME=${IMAGE_NAME-openioci/builder}
 
 s2i_args="--pull-policy=never --incremental-pull-policy=never"
 _dir="$(dirname "${BASH_SOURCE[0]}")"
