@@ -36,6 +36,22 @@ run_test_container() {
   docker run --rm --cidfile=${cid_file} --name builder-test ${IMAGE_NAME}-test /app/.oio/start.sh
 }
 
+test_container() {
+  docker exec builder-test /app/.oio/roundtrip.sh
+}
+
+wait_cid() {
+  local max=5
+  local attempt=1
+  local result=1
+  while [ $attempt -le $max ]; do
+    [ -f $cid_file ] && break
+    echo "Waiting for container to start..."
+    attempt=$(($attempt+1))
+    sleep 1
+  done
+}
+
 cleanup() {
   if [ -f $cid_file ]; then
     if container_exists; then
@@ -63,7 +79,9 @@ check_result $?
 test_s2i_usage
 check_result $?
 
-run_test_container
+run_test_container &
+wait_cid
+test_container
 
 check_result $?
 

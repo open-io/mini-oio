@@ -24,3 +24,8 @@ cd /tmp/src
   cd swift3
   PBR_VERSION=1.12 /app/venv/bin/python setup.py install
 )
+
+. /app/.oio/env.sh
+
+/app/.oio/start.sh &
+/app/.oio/bootstrap.sh
