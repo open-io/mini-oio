@@ -2,7 +2,8 @@ version: 2.1
 executors:
   docker-publish:
     environment:
-      IMAGE_NAME: openioci/builder
+      BUILDER_NAME: openioci/builder
+      RUNTIME_NAME: openioci/runtime
     docker:
       - image: circleci/buildpack-deps:bionic-scm
 jobs:
@@ -19,8 +20,8 @@ jobs:
       - run:
           name: Build
           command: |
-            docker pull $IMAGE_NAME:latest || true
-            docker build --cache-from $IMAGE_NAME:latest -t $IMAGE_NAME .
+            docker pull $BUILDER_NAME:latest || true
+            docker build --cache-from $BUILDER_NAME:latest -t $BUILDER_NAME .
       - run:
           name: Install s2i
           command: curl -L https://github.com/openshift/source-to-image/releases/download/v1.1.14/source-to-image-v1.1.14-874754de-linux-amd64.tar.gz | tar xz ./s2i && sudo install s2i /usr/local/bin/s2i
@@ -28,12 +29,15 @@ jobs:
           name: Test
           command: make test
       - run:
-          name: Save image
-          command: docker save -o image.tar $IMAGE_NAME
+          name: Save images
+          command: |
+            docker save $BUILDER_NAME | gzip > builder.tar.gz
+            docker save $RUNTIME_NAME | gzip > runtime.tar.gz
       - persist_to_workspace:
           root: .
           paths:
-            - ./image.tar
+            - ./builder.tar.gz
+            - ./runtime.tar.gz
   publish:
     executor: docker-publish
     steps:
@@ -41,16 +45,19 @@ jobs:
           at: /tmp/workspace
       - setup_remote_docker
       - run:
-          name: Load image
-          command: docker load -i /tmp/workspace/image.tar
+          name: Load images
+          command: |
+            docker load -i /tmp/workspace/builder.tar.gz
+            docker load -i /tmp/workspace/runtime.tar.gz
       - run:
           name: Push image
           command: |
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
             IMAGE_TAG="${CIRCLE_BUILD_NUM}"
-            docker tag $IMAGE_NAME:latest $IMAGE_NAME:$IMAGE_TAG
-            docker push $IMAGE_NAME:latest
-            docker push $IMAGE_NAME:$IMAGE_TAG
+            docker tag $BUILDER_NAME:latest $BUILDER_NAME:$IMAGE_TAG
+            docker push $BUILDER_NAME:latest
+            docker push $BUILDER_NAME:$IMAGE_TAG
+            docker push $RUNTIME_NAME:latest
 
 workflows:
   version: 2

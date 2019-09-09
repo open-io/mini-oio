@@ -2,7 +2,8 @@
 
 set -o nounset
 
-IMAGE_NAME=${IMAGE_NAME-openioci/builder}
+BUILDER_NAME=${BUILDER_NAME-openioci/builder}
+RUNTIME_NAME=${RUNTIME_NAME-openioci/runtime}
 
 s2i_args="--pull-policy=never --incremental-pull-policy=never"
 _dir="$(dirname "${BASH_SOURCE[0]}")"
@@ -18,22 +19,22 @@ container_exists() {
 }
 
 prepare() {
-  if ! image_exists ${IMAGE_NAME}; then
-    echo "ERR: image ${IMAGE_NAME} does not exist."
+  if ! image_exists ${BUILDER_NAME}; then
+    echo "ERR: builder image ${BUILDER_NAME} does not exist."
     exit 1
   fi
 }
 
 run_s2i_build() {
-  s2i build --incremental ${s2i_args} ${test_dir}/src ${IMAGE_NAME} ${IMAGE_NAME}-test
+  s2i build --incremental ${s2i_args} ${test_dir}/src ${BUILDER_NAME} ${RUNTIME_NAME}
 }
 
 test_s2i_usage() {
-  s2i usage ${s2i_args} ${IMAGE_NAME} &>/dev/null
+  s2i usage ${s2i_args} ${RUNTIME_NAME} &>/dev/null
 }
 
 run_test_container() {
-  docker run --rm --cidfile=${cid_file} --name builder-test ${IMAGE_NAME}-test /app/.oio/start.sh
+  docker run --rm --cidfile=${cid_file} --name builder-test ${RUNTIME_NAME} /app/.oio/start.sh
 }
 
 test_container() {
@@ -58,9 +59,6 @@ cleanup() {
       docker stop $(cat $cid_file)
     fi
   fi
-  if image_exists ${IMAGE_NAME}-test; then
-    docker rmi ${IMAGE_NAME}-test
-  fi
 }
 
 check_result() {
@@ -68,6 +66,9 @@ check_result() {
   if [[ "$result" != "0" ]]; then
     echo "FAIL: exit code: ${result}"
     cleanup
+    if image_exists ${RUNTIME_NAME}; then
+      docker rmi ${RUNTIME_NAME}
+    fi
     exit $result
   fi
 }
