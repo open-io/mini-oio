@@ -54,6 +54,14 @@ test_oioswift() {
   exit 1
 }
 
+test_s3() {
+  S3="aws --endpoint-url=http://127.0.0.1:5000 s3"
+  $S3 mb s3://test
+  $S3 cp /etc/os-release s3://test/
+  $S3 rm --recursive s3://test/
+}
+
 wait_for_openio
 test_openio
 test_oioswift
+test_s3
