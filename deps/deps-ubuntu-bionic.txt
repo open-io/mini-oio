@@ -3,6 +3,7 @@ run libjerasure2
 run openio-gridinit
 run beanstalkd
 run redis-server
+run memcached
 build asn1c
 build bison
 build build-essential
