@@ -4,6 +4,7 @@ run openio-gridinit
 run beanstalkd
 run redis-server
 run memcached
+build apache2-dev
 build asn1c
 build bison
 build build-essential
