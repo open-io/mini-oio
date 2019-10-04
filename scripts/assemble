@@ -11,7 +11,7 @@ cd /tmp/src
 (
   cd oio-sds
   export CMAKE_OPTS='-DCMAKE_INSTALL_PREFIX=/app/oio -DLD_LIBDIR=lib'
-  export CMAKE_OPTS="${CMAKE_OPTS} -DZK_LIBDIR=/usr/lib -DZK_INCDIR=/usr/include/zookeeper"
+  export CMAKE_OPTS="${CMAKE_OPTS} -DZK_LIBDIR=/usr/lib -DZK_INCDIR=/usr/include/zookeeper -DAPACHE2_LIBDIR=/usr/lib/apache2 -DAPACHE2_INCDIR=/usr/include/apache2 -DAPACHE2_MODDIR=/app/oio/lib/apache2/module"
   cmake ${CMAKE_OPTS} -DCMAKE_BUILD_TYPE="Debug" .
   make all install
   PBR_VERSION=5.0.0 /app/venv/bin/python setup.py install
