@@ -70,3 +70,12 @@ workflows:
           filters:
             branches:
               only: master
+  nightly:
+    jobs:
+      - build
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only: master
