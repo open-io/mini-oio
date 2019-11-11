@@ -9,11 +9,13 @@ echo "---> Building and installing from source..."
 
 cd /tmp/src
 (
-  cd oio-sds
+
   export CMAKE_OPTS='-DCMAKE_INSTALL_PREFIX=/app/oio -DLD_LIBDIR=lib'
   export CMAKE_OPTS="${CMAKE_OPTS} -DZK_LIBDIR=/usr/lib -DZK_INCDIR=/usr/include/zookeeper"
-  cmake ${CMAKE_OPTS} -DCMAKE_BUILD_TYPE="Debug" .
+  mkdir /tmp/build && cd /tmp/build
+  cmake ${CMAKE_OPTS} -DCMAKE_BUILD_TYPE="Debug" /tmp/src/oio-sds
   make all install
+  cd /tmp/src/oio-sds
   PBR_VERSION=5.0.0 /app/venv/bin/python setup.py install
 )
 (
